@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1697161469 source:c:\users\wellington\onedrive\Área de trabalho\atividade ifsp\gestão de projetos\projeto\debroieventos\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	<conio.h>
+
