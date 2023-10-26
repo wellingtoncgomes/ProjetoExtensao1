@@ -31,13 +31,12 @@
 
 char tipoUsuario[MAX_USUARIO];
 int isAdmin=0;
-// Estrutura para armazenar informações do usuário
+
+// STRUCTS
 typedef struct {
     char usuario[MAX_USUARIO];
     char senha[MAX_SENHA];
 } Usuario;
-
-
 typedef struct {
     char nome[50];
     char descricao[100];
@@ -47,29 +46,47 @@ typedef struct {
     int disponibilidade;
 } Cardapio;
 
-// Função para ler uma string segura com fgets
-void lerString(char *destino, int tamanho) {
-    fflush(stdin);  // Limpa o buffer de entrada
-    fgets(destino, tamanho, stdin);
+//DECLARAÇÕES DE FUNÇÕES MENU
+void exibirMenuPrincipal();
+void exibirMenuAdmin(tipoUsuario);
+void exibirSubMenuCadastro();
+void exibirSubMenuEventos();
+void exibirSubMenuCardapio(tipoUsuario);
+void exibirSubMenuCentroCustos();
 
-    // Limpa o buffer de entrada
-    if (strchr(destino, '\n') == NULL) {
-        int c;
-        while ((c = getchar()) != '\n' && c != EOF);
-    } else {
-        destino[strcspn(destino, "\n")] = '\0'; // Remove a quebra de linha
-    }
-}
-void criarCardapio();
+//DECLARAÇÕES DE FUNÇÕES MENU
+int fazerLogin(char *arquivo, char *tipoUsuario);
+
+//DECLARAÇÕES DE FUNÇÕES LIMPAR
 void limparBuffer();
-void exibirCardapiosDoArquivo();
-void trocarDisponibilidade();
+void limparConsole();
+
+//DECLARAÇÕES DE FUNÇÕES CRUD CARDAPIO
+void criarCardapio();
 void atualizarCardapio();
-void exibirCardapio(const Cardapio *cardapio);
-void exibirSubMenuCardapio();
-void exibirCardapiosDoArquivo();
 void excluirCardapio();
-// Função para exibir o menu principal
+void exibirCardapiosDoArquivo();
+void exibirCardapio(const Cardapio *cardapio);
+
+//DECLARAÇÕES DE FUNÇÕES LER COM VALIDAÇÃO
+void lerString(char *destino, int tamanho);
+int confirmarExclusao();
+int confirmarContinuacao();
+int validarEntradaInt();
+double validarEntradaDouble();
+
+//DECLARAÇÕES DE FUNÇÕES PAUSA
+void pausar();
+
+int main() {
+    setlocale(LC_ALL, "");
+
+    exibirMenuPrincipal();
+
+    return 0;
+}
+
+//FUNÇÕES DE MENU
 void exibirMenuPrincipal() {
     int escolha;
     do {
@@ -118,7 +135,6 @@ void exibirMenuPrincipal() {
         getchar();
     } while (escolha != 3);
 }
-
 void exibirMenuAdmin(tipoUsuario) {
     int escolha;
     if(isAdmin){
@@ -287,6 +303,56 @@ void exibirSubMenuEventos(){
     } while (escolha != 5);
 
 }
+void exibirSubMenuCardapio(tipoUsuario) {
+    int escolha;
+    do {
+        system(CLEAR_SCREEN);
+        printf(GREEN"\n\t====== Gerenciamento Debroi Evento - %s ======\n",tipoUsuario);
+        printf(RESET"\t\t1. Criar Cardapio\n");
+        printf("\t\t2. Ver Cardapios Disponiveis\n");
+        printf("\t\t3. Excluir Cardapios\n");
+        printf("\t\t4. Atualizar Cardapio\n");
+        printf(RED"\t\t5. Voltar\n"RESET);
+        printf("\t=====================================\n");
+        printf("\t\tEscolha uma opção: ");
+        scanf("%d", &escolha);
+
+        switch (escolha) {
+            case 1:
+                limparConsole();
+                criarCardapio();
+                // Adicione o código para o caso 1 (Cadastro Funcionario) aqui
+                break;
+            case 2:
+                limparConsole();
+                exibirCardapiosDoArquivo();
+                // Adicione o código para o caso 2 (Cadastro Eventos) aqui
+                break;
+            case 3:
+                limparConsole();
+                excluirCardapio();
+                // Adicione o código para o caso 3 (Cadastro Cardapio) aqui
+                break;
+            case 4:
+                limparConsole();
+                modificarCardapio();
+                //atualizarCardapio();
+                // Adicione o código para o caso 4 (Cadastro Locais) aqui
+                break;
+            case 5:
+                limparConsole();
+                exibirSubMenuCadastro(tipoUsuario);
+                break;
+            default:
+                printf("\n\t\tOpção inválida! Tente novamente.\n");
+                sleep(2);
+                break;
+        }
+
+        printf("\nPressione Enter para continuar...");
+        getchar();
+    } while (escolha != 5);
+}
 void exibirSubMenuCentroCustos(){
     int escolha;
     do {
@@ -329,11 +395,7 @@ void exibirSubMenuCentroCustos(){
     } while (escolha != 4);
 
 }
-
-void limparConsole() {
-    system(CLEAR_SCREEN);
-}
-
+//FUNÇÃO LOGIN
 int fazerLogin(char *arquivo, char *tipoUsuario) {
     FILE *f = fopen(arquivo, "r");
 
@@ -395,183 +457,63 @@ int fazerLogin(char *arquivo, char *tipoUsuario) {
 
     return loginValido;
 }
-int main() {
-    setlocale(LC_ALL, "");
-
-    // Array para armazenar informações do usuário
-    Usuario usuarios[MAX_EVENTOS];
-    int numUsuarios = 0;
-
-    // Adicione alguns usuários para ilustrar (substitua isso com a leitura de um arquivo TXT)
-    //strcpy(usuarios[0].usuario, "admin");
-    //strcpy(usuarios[0].senha, "admin123");
-    //numUsuarios++;
-
-    exibirMenuPrincipal();
-
-    return 0;
-}
-void exibirSubMenuCardapio(tipoUsuario) {
-    int escolha;
-    do {
-        system(CLEAR_SCREEN);
-        printf(GREEN"\n\t====== Gerenciamento Debroi Evento - %s ======\n",tipoUsuario);
-        printf(RESET"\t\t1. Criar Cardapio\n");
-        printf("\t\t2. Ver Cardapios Disponiveis\n");
-        printf("\t\t3. Excluir Cardapios\n");
-        printf("\t\t4. Atualizar Cardapio\n");
-        printf("\t\t5. Inativar Cardapio\n");
-        printf(RED"\t\t6. Voltar\n"RESET);
-        printf("\t=====================================\n");
-        printf("\t\tEscolha uma opção: ");
-        scanf("%d", &escolha);
-
-        switch (escolha) {
-            case 1:
-                limparConsole();
-                criarCardapio();
-                // Adicione o código para o caso 1 (Cadastro Funcionario) aqui
-                break;
-            case 2:
-                limparConsole();
-                exibirCardapiosDoArquivo();
-                // Adicione o código para o caso 2 (Cadastro Eventos) aqui
-                break;
-            case 3:
-                limparConsole();
-                excluirCardapio();
-                // Adicione o código para o caso 3 (Cadastro Cardapio) aqui
-                break;
-            case 4:
-                limparConsole();
-                atualizarCardapio();
-                // Adicione o código para o caso 4 (Cadastro Locais) aqui
-                break;
-            case 5:
-                limparConsole();
-                trocarDisponibilidade();
-                // Adicione o código para o caso 5 (Cadastro Usuarios) aqui
-                break;
-            case 6:
-                limparConsole();
-                exibirSubMenuCadastro(tipoUsuario);
-                break;
-            default:
-                printf("\n\t\tOpção inválida! Tente novamente.\n");
-                sleep(2);
-                break;
-        }
-
-        printf("\nPressione Enter para continuar...");
-        getchar();
-    } while (escolha != 6);
-}
+//FUNÇÃO PARA LIMPAR
 void limparBuffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
+void limparConsole() {
+    system(CLEAR_SCREEN);
+}
+//FUNÇÕES CRUD CARDAPIO
 void criarCardapio() {
     Cardapio novoCardapio;
+    limparConsole();
+    printf(GREEN"\n\t========= Cadastro de Cardápio -  Debroi Eventos ==========\n"RESET);
+    do {
+        printf("\t\tNome do Cardápio: ");
+        lerString(novoCardapio.nome, 50);
 
-    printf("Nome do Cardapio: ");
-    scanf("%s", novoCardapio.nome);
+        printf("\t\tDescrição do Cardápio: ");
+        lerString(novoCardapio.descricao, 100);
 
-    printf("Descricao do Cardapio: ");
-    scanf("%s", novoCardapio.descricao);
+        printf("\t\tIngredientes: ");
+        lerString(novoCardapio.ingredientes, 200);
 
-    printf("Ingredientes: ");
-    scanf("%s", novoCardapio.ingredientes);
+        printf("\t\tQuantidade de Pessoas: ");
+        novoCardapio.quantidadePessoas = validarEntradaInt();
 
-    printf("Quantidade de Pessoas: ");
-    scanf("%d", &novoCardapio.quantidadePessoas);
+        printf("\t\tValor do cardápio por pessoa: ");
+        novoCardapio.valor = validarEntradaDouble();
 
-    printf("Valor do Cardapio: ");
-    scanf("%f", &novoCardapio.valor);
+        printf("\t\tDisponibilidade (1 para ativo, 0 para inativo): ");
+        novoCardapio.disponibilidade = validarEntradaInt();
 
-    printf("Disponibilidade (1 para ativo, 0 para inativo): ");
-    scanf("%d", &novoCardapio.disponibilidade);
+        FILE *arquivo = fopen("cardapios.txt", "a");
 
-    // Abrir o arquivo em modo de escrita (append)
-    FILE *arquivo = fopen("cardapios.txt", "a");
-
-    if (arquivo == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return;
-    }
-
-    // Escrever os dados no arquivo
-    fprintf(arquivo, "%s;%s;%s;%d;%.2f;%d\n", novoCardapio.nome, novoCardapio.descricao,
-            novoCardapio.ingredientes, novoCardapio.quantidadePessoas,
-            novoCardapio.valor, novoCardapio.disponibilidade);
-
-    // Fechar o arquivo
-    fclose(arquivo);
-
-    printf("Cardapio criado e salvo com sucesso!\n");
-    sleep(2);
-}
-void atualizarCardapio() {
-    char nomeBusca[50];
-    printf("Digite o nome do cardapio que deseja atualizar: ");
-    scanf("%s", nomeBusca);
-
-    FILE *arquivo = fopen("cardapios.txt", "r");
-    FILE *temporario = fopen("temporario.txt", "w");
-
-    if (arquivo == NULL || temporario == NULL) {
-        printf("Erro ao abrir os arquivos.\n");
-        return;
-    }
-
-    Cardapio cardapio;
-
-    while (fscanf(arquivo, "%[^;];%[^;];%[^;];%d;%f;%d\n",
-                  cardapio.nome, cardapio.descricao, cardapio.ingredientes,
-                  &cardapio.quantidadePessoas, &cardapio.valor, &cardapio.disponibilidade) != EOF) {
-
-        if (strcmp(cardapio.nome, nomeBusca) == 0) {
-            // Permitir ao usuário atualizar todos os itens
-            printf("Digite os novos dados para o cardapio:\n");
-
-            printf("Nome: ");
-            scanf("%s", cardapio.nome);
-
-            printf("Descricao: ");
-            scanf("%s", cardapio.descricao);
-
-            printf("Ingredientes: ");
-            scanf("%s", cardapio.ingredientes);
-
-            printf("Quantidade de Pessoas: ");
-            scanf("%d", &cardapio.quantidadePessoas);
-
-            printf("Valor: ");
-            scanf("%f", &cardapio.valor);
-
-            printf("Disponibilidade (1 para ativo, 0 para inativo): ");
-            scanf("%d", &cardapio.disponibilidade);
+        if (arquivo == NULL) {
+            printf("Erro ao abrir o arquivo.\n");
+            return;
         }
 
-        // Escrever os dados no arquivo temporário
-        fprintf(temporario, "%s;%s;%s;%d;%f;%d\n", cardapio.nome, cardapio.descricao,
-                cardapio.ingredientes, cardapio.quantidadePessoas,
-                cardapio.valor, cardapio.disponibilidade);
-    }
+        // Escrever os dados no arquivo
+        fprintf(arquivo, "%s;%s;%s;%d;%.2lf;%d\n", novoCardapio.nome, novoCardapio.descricao,
+                novoCardapio.ingredientes, novoCardapio.quantidadePessoas,
+                novoCardapio.valor, novoCardapio.disponibilidade);
+        // Fechar o arquivo
+        fclose(arquivo);
+        printf("Cardápio criado e salvo com sucesso!\n");
+        sleep(1);
+        limparConsole();
 
-    // Fechar os arquivos
-    fclose(arquivo);
-    fclose(temporario);
-
-    // Substituir o arquivo original pelo temporário
-    remove("cardapios.txt");
-    rename("temporario.txt", "cardapios.txt");
-
-    printf("Cardapio atualizado com sucesso!\n");
+    } while (confirmarContinuacao() != 0);
+    printf("\n\n\t\tVoltando ao menu anterior... ");
+    sleep(1);
 }
-void excluirCardapio() {
-    char nomeExcluir[50];
-    printf("Digite o nome do cardapio que deseja excluir: ");
-    scanf("%s", nomeExcluir);
+void modificarCardapio() {
+    char nomeModificar[50];
+    printf("Digite o nome do cardapio que deseja modificar: ");
+    lerString(nomeModificar,50);
 
     FILE *arquivoEntrada = fopen("cardapios.txt", "r");
     FILE *arquivoTemp = fopen("temp.txt", "w");
@@ -583,17 +525,75 @@ void excluirCardapio() {
 
     Cardapio cardapio;
 
+    int encontrado = 0;
+    int escolha;
+
     while (fscanf(arquivoEntrada, "%[^;];%[^;];%[^;];%d;%f;%d\n",
                   cardapio.nome, cardapio.descricao, cardapio.ingredientes,
                   &cardapio.quantidadePessoas, &cardapio.valor,
                   &cardapio.disponibilidade) != EOF) {
 
-        if (strcmp(cardapio.nome, nomeExcluir) != 0) {
-            // Se o nome não corresponder, escreva no arquivo temporário
-            fprintf(arquivoTemp, "%s;%s;%s;%d;%f;%d\n", cardapio.nome, cardapio.descricao,
-                    cardapio.ingredientes, cardapio.quantidadePessoas,
-                    cardapio.valor, cardapio.disponibilidade);
+        if (strcmp(cardapio.nome, nomeModificar) == 0) {
+            // Se o nome corresponder, permita ao usuário modificar as características
+             do{
+                    printf("\t============= Cardapio Atual =============\n");
+                    exibirCardapio(&cardapio);
+                    printf("\n\t============= O que deseja atualizar =======\n");
+                    printf("\t\t1. Nome\n");
+                    printf("\t\t2. Descrição\n");
+                    printf("\t\t3. Ingredientes\n");
+                    printf("\t\t4. Valor do cardapio por pessoas\n");
+                    printf("\t\t5. Disponibilidade\n");
+                    printf("\t\t6. Voltar\n");
+                    printf("\n\t===========================================\n");
+                    printf("\tDigite a opção escolhida: ");
+                    scanf("%d", &escolha);
+
+            switch (escolha) {
+            case 1:
+                printf("\t\t Novo Nome: ");
+                lerString(cardapio.nome,50);
+                limparConsole();
+                break;
+            case 2:
+                printf("\t\tNova Descricao: ");
+                lerString(cardapio.descricao,100);
+                limparConsole();
+                break;
+            case 3:
+                printf("\t\tNovos Ingredientes: ");
+                lerString(cardapio.ingredientes,200);
+                limparConsole();
+
+                break;
+            case 4:
+                printf("\t\tNovo Valor: ");
+                cardapio.valor = validarEntradaDouble();
+                limparConsole();
+
+                break;
+            case 5:
+                printf("\t\tNova Disponibilidade (1 para ativo, 0 para inativo): ");
+                cardapio.disponibilidade = validarEntradaInt();
+                limparConsole();
+
+                break;
+            case 6:
+                limparConsole();
+               // exibirSubMenuCardapio(tipoUsuario);
+                break;
+            default:
+                printf("\n\t\tOpção inválida! Tente novamente.\n");
+                sleep(2);
+                break;
+ } } while (escolha != 6);
+            encontrado = 1;
         }
+
+        // Escreva no arquivo temporário
+        fprintf(arquivoTemp, "%s;%s;%s;%d;%f;%d\n", cardapio.nome, cardapio.descricao,
+                cardapio.ingredientes, cardapio.quantidadePessoas,
+                cardapio.valor, cardapio.disponibilidade);
     }
 
     fclose(arquivoEntrada);
@@ -605,50 +605,71 @@ void excluirCardapio() {
     // Renomear o arquivo temporário para o original
     rename("temp.txt", "cardapios.txt");
 
-    printf("Cardapio excluido com sucesso!\n");
+    if (encontrado) {
+        printf("Cardapio modificado com sucesso!\n");
+        sleep(2);
+    } else {
+        printf("Cardapio nao encontrado.\n");
+        sleep(2);
+    }
 }
-void trocarDisponibilidade() {
-    char nomeBusca[50];
-    printf("Digite o nome do cardapio que deseja atualizar: ");
-    scanf("%s", nomeBusca);
+void excluirCardapio() {
+     char nomeExcluir[50];
+    printf("Digite o nome do cardapio que deseja excluir: ");
+    lerString(nomeExcluir, 50);
 
-    FILE *arquivo = fopen("cardapios.txt", "r");
-    FILE *temporario = fopen("temporario.txt", "w");
+    FILE *arquivoEntrada = fopen("cardapios.txt", "r");
+    FILE *arquivoTemp = fopen("temp.txt", "w");
 
-    if (arquivo == NULL || temporario == NULL) {
-        printf("Erro ao abrir os arquivos.\n");
+    if (arquivoEntrada == NULL || arquivoTemp == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
         return;
     }
 
     Cardapio cardapio;
+    int encontrado = 0;
 
-    while (fscanf(arquivo, "%[^;];%[^;];%[^;];%d;%f;%d\n",
+    while (fscanf(arquivoEntrada, "%[^;];%[^;];%[^;];%d;%f;%d\n",
                   cardapio.nome, cardapio.descricao, cardapio.ingredientes,
-                  &cardapio.quantidadePessoas, &cardapio.valor, &cardapio.disponibilidade) != EOF) {
+                  &cardapio.quantidadePessoas, &cardapio.valor,
+                  &cardapio.disponibilidade) != EOF) {
 
-        if (strcmp(cardapio.nome, nomeBusca) == 0) {
-            // Atualizar a disponibilidade no registro atual
-            cardapio.disponibilidade = !cardapio.disponibilidade;
+        if (strcmp(cardapio.nome, nomeExcluir) == 0) {
+            encontrado = 1;
+            exibirCardapio(&cardapio); // Exibir detalhes do cardápio antes de excluir
+
+            if (!confirmarExclusao()) {
+                fclose(arquivoEntrada);
+                fclose(arquivoTemp);
+                remove("temp.txt");
+                printf("Exclusao cancelada.\n");
+                return;
+            }
+        } else {
+            // Escrever no arquivo temporário apenas se não for o cardápio a ser excluído
+            fprintf(arquivoTemp, "%s;%s;%s;%d;%f;%d\n", cardapio.nome, cardapio.descricao,
+                    cardapio.ingredientes, cardapio.quantidadePessoas,
+                    cardapio.valor, cardapio.disponibilidade);
         }
-
-        // Escrever os dados no arquivo temporário
-        fprintf(temporario, "%s;%s;%s;%d;%f;%d\n", cardapio.nome, cardapio.descricao,
-                cardapio.ingredientes, cardapio.quantidadePessoas,
-                cardapio.valor, cardapio.disponibilidade);
     }
 
-    // Fechar os arquivos
-    fclose(arquivo);
-    fclose(temporario);
+    fclose(arquivoEntrada);
+    fclose(arquivoTemp);
 
-    // Substituir o arquivo original pelo temporário
+    if (!encontrado) {
+        remove("temp.txt"); // Se não foi encontrado, remover o arquivo temporário
+        printf("Cardapio nao encontrado.\n");
+        return;
+    }
+
+    // Remover o arquivo original
     remove("cardapios.txt");
-    rename("temporario.txt", "cardapios.txt");
 
-    printf("Disponibilidade do cardapio atualizada com sucesso!\n");
+    // Renomear o arquivo temporário para o original
+    rename("temp.txt", "cardapios.txt");
+
+    printf("Cardapio excluido com sucesso!\n");
 }
-
-
 void exibirCardapiosDoArquivo() {
     FILE *arquivo = fopen("cardapios.txt", "r");
 
@@ -658,26 +679,129 @@ void exibirCardapiosDoArquivo() {
     }
 
     Cardapio cardapioLido;
-    // Ler os dados do arquivo e exibir no console
-    while (fscanf(arquivo, "%[^;];%[^;];%[^;];%d;%f;%d\n", cardapioLido.nome, cardapioLido.descricao,
-                  cardapioLido.ingredientes, &cardapioLido.quantidadePessoas, &cardapioLido.valor,
-                  &cardapioLido.disponibilidade) != EOF) {
-        exibirCardapio(&cardapioLido);
-        printf("\n");
-    }
+    int pageSize = 3; // Número de cardápios por página
+    int pagina = 1;
+    int contador = 0;
+    int reiniciarArquivo = 1;
 
-    printf("precione ENTER para sair!!");
-    while (getchar() != '\n');
-        getchar();
-    // Fechar o arquivo
+    do {
+        if (reiniciarArquivo) {
+            rewind(arquivo);
+            reiniciarArquivo = 0;
+        }
+
+        printf("\t=========== CARDAPIOS (\e[0;32mPAGINA %d\e[m) =============\n", pagina);
+
+        char linha[512];
+        while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+            sscanf(linha, "%[^;];%[^;];%[^;];%d;%f;%d\n", cardapioLido.nome, cardapioLido.descricao,
+                   cardapioLido.ingredientes, &cardapioLido.quantidadePessoas, &cardapioLido.valor,
+                   &cardapioLido.disponibilidade);
+
+            exibirCardapio(&cardapioLido);
+            printf("\n");
+
+            contador++;
+
+            if (contador >= pageSize) {
+                break;
+            }
+        }
+
+        if (feof(arquivo)) {
+            break; // Se chegamos ao final do arquivo, saímos do loop externo
+        }
+
+        pausar();
+
+        printf("\n\tPressione '\e[0;32mn\e[m' para avançar, '\e[0;33mp\e[m' para retroceder, ou '\e[1;91mq\e[m' para sair...\n\t\t");
+        char input = getchar();
+        while (getchar() != '\n');
+
+        if (input == 'q' || input == 'Q') {
+            break; // Sair do loop se o usuário digitar 'q' ou 'Q'
+        } else if (input == 'n' || input == 'N') {
+            // Avançar para a próxima página
+            limparConsole();
+            pagina++;
+            contador = 0;
+        } else if (input == 'p' || input == 'P' && pagina > 1) {
+            // Retroceder para a página anterior
+            limparConsole();
+            pagina--;
+            contador = 0;
+            reiniciarArquivo = 1; // Reiniciar o arquivo ao retroceder
+        }
+
+    } while (1);
+
     fclose(arquivo);
 }
 void exibirCardapio(const Cardapio *cardapio) {
-    printf("Nome: %s\n", cardapio->nome);
-    printf("Descricao: %s\n", cardapio->descricao);
-    printf("Ingredientes: %s\n", cardapio->ingredientes);
-    printf("Quantidade de Pessoas: %d\n", cardapio->quantidadePessoas);
-    printf("Valor: %.2f\n", cardapio->valor);
-    printf("Disponibilidade: %s\n", cardapio->disponibilidade ? "Ativo" : "Inativo");
+    printf("\t\tNome:\e[0;36m %s\e[m\n", cardapio->nome);
+    printf("\t\tDescricao:\e[0;36m %s\e[m\n", cardapio->descricao);
+    printf("\t\tIngredientes:\e[0;36m %s\e[m\n", cardapio->ingredientes);
+    printf("\t\tQuantidade de Pessoas:\e[0;36m %d\e[m\n", cardapio->quantidadePessoas);
+    printf("\t\tValor:\e[0;36m %.2f\e[m\n", cardapio->valor);
+    printf("\t\tDisponibilidade:\e[0;36m  %s\e[m\n", cardapio->disponibilidade ? "\e[0;32mAtivo\e[m" : "\e[1;91mInativo\e[m");
+}
+//FUNÇÕES PARA LER ENTRADAS COM VALIDAÇÃO
+void lerString(char *destino, int tamanho) {
+    fflush(stdin);  // Limpa o buffer de entrada
+    fgets(destino, tamanho, stdin);
 
+    // Limpa o buffer de entrada
+    if (strchr(destino, '\n') == NULL) {
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+    } else {
+        destino[strcspn(destino, "\n")] = '\0'; // Remove a quebra de linha
+    }
+}
+int confirmarExclusao() {
+    char resposta;
+    printf("Tem certeza que deseja excluir o cardapio? (S/N): ");
+    scanf(" %c", &resposta);  // Adicionamos um espaço antes do %c para consumir a nova linha pendente
+    limparBuffer(); // Limpar o buffer para evitar problemas de leitura posterior
+
+    return (resposta == 'S' || resposta == 's');
+}
+int confirmarContinuacao() {
+    char resposta;
+    printf("Deseja continuar o realizando este tipo de operação? (S/N): ");
+    scanf(" %c", &resposta);  // Adicionamos um espaço antes do %c para consumir a nova linha pendente
+    limparBuffer(); // Limpar o buffer para evitar problemas de leitura posterior
+
+    return (resposta == 'S' || resposta == 's');
+}
+int validarEntradaInt() {
+    int valor;
+
+    while (1) {
+        if (scanf("%d", &valor) == 1) {
+            limparBuffer();
+            return valor;
+        } else {
+            printf("Por favor, insira um valor válido (número inteiro).\n");
+            limparBuffer();
+        }
+    }
+}
+double validarEntradaDouble() {
+    double valor;
+
+    while (1) {
+        if (scanf("%lf", &valor) == 1) {
+            limparBuffer();
+            return valor;
+        } else {
+            printf("Por favor, insira um valor válido (número real).\n");
+            limparBuffer();
+        }
+    }
+}
+//fUNÇÃO PAUSAR
+void pausar() {
+    printf("\t\tPressione Enter para continuar...");
+    while (getchar() != '\n');
 }

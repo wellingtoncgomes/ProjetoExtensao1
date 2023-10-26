@@ -1,3 +1,6 @@
-petigateu;sobremesa;sorvete;200;150,000000;1
-churrasco;espetinho;maminha;100;200,000000;1
-musse;creme;maracuja;50;50,000000;0
+chopp;chopp pilsen barril 50L;Pilsen;20;15,000000;1
+musse;chocolate;chocolate;1;2,00;1
+bolo de cenoura;bolo de cenoura cobertura chocolate;cenoura,leite,ovos e chocolate;10;5,00;1
+cerveja;brahma;malte;1;5,00;1
+salgadinho;salgadinhos de festa 100 un;frango,carne, presunto e queijo;10;10,00;1
+sorvete;picole;diversos;1;2,00;1
